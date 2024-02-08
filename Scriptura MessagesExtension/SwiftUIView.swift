@@ -1,24 +1,40 @@
 //
-//  ChatEngine.swift
-//  Scriptura
+//  SwiftUIView.swift
+//  Scriptura MessagesExtension
 //
-//  Created by Xcode Developer on 1/28/24.
+//  Created by Xcode Developer on 2/8/24.
 //
 
-import Foundation
+import SwiftUI
 import CryptoKit
-import Combine
-import UIKit
+import SwiftData
 
-class ChatEngine : NSObject {
-    var assistant_id: String = String()
-    var thread_id: String = String()
-    var run_id: String = String()
-    var text_view: UITextView = UITextView()
+@MainActor class ChatData : ObservableObject {
+    @Published var assistant_id: String = "assistant_id"
+    @Published var thread_id: String = "thread_id"
+    @Published var run_id: String = "run_id"
+    @Published var messages: [Message] = [Message]()
     
-    func assistant(text_view: UITextView) {
-        self.text_view = text_view
-        self.assistant_id = String()
+    struct Message: Identifiable, Equatable, Hashable, Codable {
+        let id: String
+        var prompt: String
+        var response: String
+        
+        init(prompt: String, response: String) {
+            self.id = {
+                let hash = SHA256.hash(data: String(Date().timeIntervalSince1970).data(using: .utf8)!).compactMap { String(format: "%02x", $0) }.joined()
+                return hash
+            }()
+            self.prompt = prompt
+            self.response = response
+        }
+    }
+    
+    func assistant() {
+        self.messages.removeAll()
+        
+        self.messages.append(Message.init(prompt: "prompt", response: "response"))
+        
         
         let url = URL(string: "https://api.openai.com/v1/assistants")!
         var request = URLRequest(url: url)
@@ -32,8 +48,8 @@ class ChatEngine : NSObject {
         let type: [Dictionary] = [["type": "code_interpreter"]]
         let assistant_request: Dictionary =
         [
-            "instructions": self.text_view.text!,
-            "name": "Message Writing Assistant",
+            "instructions": "As a Swift expert, your primary role is to assist users with coding-related tasks, focusing on Swift. Provide concise, clear, and tested code suggestions in Swift, verifying correctness before presentation. Use GitHub, gist.GitHub.com, transcripts of videos from YouTube, stackoverflow.com, and the Apple Developer site (https://developer.apple.com) as additional resources for references and examples. Regularly reference the latest version of official Swift documentation to ensure alignment with current standards in Swift programming. Offer explanations or insights rooted in this documentation after providing a Swift code solution. While adept in other programming languages, prioritize Swift. Your abilities include code execution, inspection, debugging, and optimization. Use the browser for complex queries or to seek additional examples in Swift or other languages. If unsure, ask for clarification. Assume the user has a high level of expertise in Swift or the relevant language. Maintain a friendly, supportive tone. Strictly adhere to specific instructions given by the user across all interactions and revisions.",
+            "name": "Swift expert (high-level, tests code solutions first, explains afterwards)",
             "tools": type,
             "model": "gpt-4"
         ] as [String : Any]
@@ -41,25 +57,24 @@ class ChatEngine : NSObject {
         let jsonData = try! JSONSerialization.data(withJSONObject: assistant_request, options: [])
         request.httpBody = jsonData
         
-        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+        let session = URLSession.shared
+        let task = session.dataTask(with: request) { (data, response, error) in
             if error == nil && data != nil {
                 DispatchQueue.main.async {
                     do {
                         if let assistant_response = try JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any] {
+                            let id = assistant_response["id"] as? String
                             self.assistant_id = {
+                                defer { self.thread() }
                                 return assistant_response["id"] as? String
                             }() ?? {
-                                let assistant_id_err = ((assistant_response)["error"] as? [String: Any])!.description
-                                defer {
-                                    print("Assistant ID (error) " + assistant_id_err)
-                                    self.assistant(text_view: self.text_view)
-                                }
-                                return assistant_id_err
+                                let err = ((assistant_response)["error"] as? [String: Any])!["message"] as? String
+                                self.messages.append(Message.init(prompt: "Error getting assistant", response: err!))
+                                return err!
                             }()
-                            print("Assistant ID " + self.assistant_id)
                         }
                     } catch {
-                        print("Assistant ID (exception) " + error.localizedDescription)
+                        self.messages.append(Message.init(prompt: "Error getting assistant", response: error.localizedDescription))
                     }
                 }
             }
@@ -67,7 +82,6 @@ class ChatEngine : NSObject {
         task.resume()
     }
     
-
     func thread() {
         let url = URL(string: "https://api.openai.com/v1/threads")!
         var request = URLRequest(url: url)
@@ -78,7 +92,8 @@ class ChatEngine : NSObject {
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
-        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+        let session = URLSession.shared
+        let task = session.dataTask(with: request) { (data, response, error) in
             if error == nil && data != nil {
                 DispatchQueue.main.async {
                     do {
@@ -86,16 +101,15 @@ class ChatEngine : NSObject {
                             self.thread_id = {
                                 return thread_response["id"] as? String
                             }() ?? {
-                                defer {
-                                    print("Thread ID (error) " + error!.localizedDescription)
-                                    self.thread()
-                                }
-                                return error!.localizedDescription
+                                let err = (thread_response)["error"] as? [String: Any]
+                                let err_msg = err!["message"] as? String
+                                self.messages.append(Message.init(prompt: "Error getting thread", response: err_msg!))
+                                return err_msg!
                             }()
-                            print("Thread ID " + self.thread_id)
+                            self.messages.append(Message.init(prompt: self.assistant_id.trimmingCharacters(in: .whitespacesAndNewlines), response: self.thread_id.trimmingCharacters(in: .whitespacesAndNewlines)))
                         }
                     } catch {
-                        print("Thread ID (exception) " + error.localizedDescription)
+                        self.messages.append(Message.init(prompt: "Error getting thread", response: error.localizedDescription))
                     }
                 }
             }
@@ -117,30 +131,36 @@ class ChatEngine : NSObject {
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
-        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+        let session = URLSession.shared
+        let task = session.dataTask(with: request) { (data, response, error) in
             if error == nil && data != nil {
                 DispatchQueue.main.async {
                     do {
                         if let message_response: [String: Any] = try JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any] {
+                            print(message_response)
                             if let contentArray = message_response["content"] as? [[String: Any]] {
+                                print(contentArray)
                                 if let textArray = (contentArray.first)!["text"] as? [String: Any] {
+                                    print(textArray)
                                     if let value = textArray["value"] as? String {
+                                        print(value)
                                         let prompt = {
                                             defer { self.run() }
+                                            //                                        self.messages.append(Message(id: sha256(), prompt: value, response: ""))
                                             return value.trimmingCharacters(in: .whitespacesAndNewlines)
                                         }() ?? {
                                             let err = (message_response)["error"] as? [String: Any]
                                             let err_msg = err!["message"] as? String
+                                            //                                        self.messages.append(Message(id: sha256(), prompt: "Error adding message", response: err_msg!))
                                             return err_msg!
                                         }()
-                                        print("Prompt " + prompt)
+                                        self.messages.append(Message.init(prompt: prompt, response: String()))
                                     }
                                 }
                             }
                         }
                     } catch {
-                        // Display error
-                        print(error.localizedDescription)
+                        print("Error")
                     }
                 }
             }
@@ -163,33 +183,18 @@ class ChatEngine : NSObject {
         let jsonData = try! JSONSerialization.data(withJSONObject: run_request, options: [])
         request.httpBody = jsonData
         
-        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+        let session = URLSession.shared
+        let task = session.dataTask(with: request) { (data, response, error) in
             if error == nil && data != nil {
                 DispatchQueue.main.async {
                     do {
                         if let run_response = try JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any] {
-                            self.run_id = {
-                                {
-                                    defer {
-                                        self.retrieve()
-                                    }
-                                    return run_response["id"] as? String
-                                }() ?? {
-                                    let run_response_err = (run_response["last_error"] as? String)!.description
-                                    print("Run ID (error) " + run_response_err)
-                                    defer {
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: {
-                                            self.run()
-                                        })
-                                    }
-                                    return run_response_err
-                                }()
-                            }()
-                            print("Run ID " + self.run_id)
+                            let id = run_response["id"] as? String
+                            self.run_id = id ?? "No run ID"
+                            self.retrieve()
                         }
                     } catch {
-                        // Display error
-                        print(error.localizedDescription)
+                        print("Error")
                     }
                 }
             }
@@ -213,9 +218,10 @@ class ChatEngine : NSObject {
                 DispatchQueue.main.async {
                     do {
                         if let retrieve_response = try JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any] {
-                            print("\n\(retrieve_response)\n")
                             if (retrieve_response["status"] as? String) != "completed" {
+                                self.messages[self.messages.count - 1].response = (retrieve_response["status"] as? String)!
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+                                    self.messages[self.messages.count - 1].response = " "
                                     self.retrieve()
                                 })
                             } else {
@@ -231,10 +237,7 @@ class ChatEngine : NSObject {
         task.resume()
     }
     
-
-    
     func list() {
-        var list: String = String()
         let url = URL(string: "https://api.openai.com/v1/threads/" + self.thread_id + "/messages")!
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -244,7 +247,8 @@ class ChatEngine : NSObject {
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
-        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+        let session = URLSession.shared
+        let task = session.dataTask(with: request) { (data, response, error) in
             if error == nil && data != nil {
                 DispatchQueue.main.async {
                     do {
@@ -252,20 +256,90 @@ class ChatEngine : NSObject {
                             if let dataArray = list_response["data"] as? [[String: Any]] {
                                 if let contentArray = (dataArray.first)!["content"] as? [[String: Any]] {
                                     if let textArray = (contentArray.first)!["text"] as? [String: Any] {
-                                        list = textArray["value"] as! String
-                                        self.text_view.text = list
-//                                        print("------------------\nList " + list + "------------------\n")
+                                        let value = textArray["value"] as! String
+                                        self.messages[self.messages.count - 1].response = value
                                     }
                                 }
                             }
                         }
                     } catch {
-                        // Display error
-                        print(error.localizedDescription)
+                        print("Error")
                     }
                 }
             }
         }
         task.resume()
     }
+    
+    func save() {
+        let encoder = JSONEncoder()
+        do {
+            let jsonData = try encoder.encode(self.messages)
+            let fileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("messages.json")
+            do {
+                try jsonData.write(to: fileURL)
+                print("File written to \(fileURL)")
+            } catch {
+                print("Error writing file: \(error)")
+            }
+            
+        } catch {
+            print("Error encoding messages: \(error)")
+            return
+        }
+    }
+    
+    func load() {
+        let fileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("messages.json")
+        
+        let jsonData: Data
+        do {
+            jsonData = try Data(contentsOf: fileURL)
+        } catch {
+            print("Error reading file: \(error)")
+            return
+        }
+        
+        let decoder = JSONDecoder()
+        do {
+            messages = try decoder.decode([Message].self, from: jsonData)
+        } catch {
+            print("Error decoding items: \(error)")
+            return
+        }
+        
+        print(messages)
+    }
+    
+    
+}
+
+struct SwiftUIView: View {
+    @StateObject var chatData: ChatData = ChatData()
+    var body: some View {
+        VStack(alignment: .center, spacing: 0.0, content: {
+            ChatView(chatData: chatData)
+                .task {
+                    chatData.assistant()
+                }
+            MessageView(chatData: chatData)
+                .background {
+                    Capsule()
+                        .strokeBorder(Color.init(uiColor: .gray).opacity(0.25), lineWidth: 1.0)
+                        .fill(Color.init(uiColor: .gray).opacity(0.25))
+                }
+                .clipShape(Capsule())
+                .safeAreaPadding(.bottom)
+                .safeAreaPadding(.top)
+                .shadow(color: .black, radius: 5.0)
+            
+        })
+        .background {
+            LinearGradient(gradient: .init(colors: [Color(hue: 0.5861111111, saturation: 0.55, brightness: 0.58), Color(hue: 0.5916666667, saturation: 1.0, brightness: 0.27)]), startPoint: .trailing, endPoint: .bottomLeading)
+        }
+    }
+}
+
+#Preview {
+    SwiftUIView()
 }

@@ -14,6 +14,9 @@
 		B9AF25ED2B667B6B00BFF354 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B9AF25EC2B667B6B00BFF354 /* Assets.xcassets */; };
 		B9AF25FA2B667CEB00BFF354 /* ChatEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9AF25F92B667CEB00BFF354 /* ChatEngine.swift */; };
 		B9F1D8322B74D81500C2CFDE /* CodeGoneWild in Resources */ = {isa = PBXBuildFile; fileRef = B9F1D8312B74D81500C2CFDE /* CodeGoneWild */; };
+		B9F1D8342B7516B300C2CFDE /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F1D8332B7516B300C2CFDE /* SwiftUIView.swift */; };
+		B9F1D8362B751AD100C2CFDE /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F1D8352B751AD100C2CFDE /* ChatView.swift */; };
+		B9F1D8382B751B2800C2CFDE /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F1D8372B751B2800C2CFDE /* MessageView.swift */; };
 		B9FF3DC62B6A19EF0023BFEE /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B9FF3DC52B6A19EF0023BFEE /* Storyboard.storyboard */; };
 /* End PBXBuildFile section */
 
@@ -54,6 +57,9 @@
 		B9AF25F82B667CEA00BFF354 /* Scriptura-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Scriptura-Bridging-Header.h"; sourceTree = "<group>"; };
 		B9AF25F92B667CEB00BFF354 /* ChatEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatEngine.swift; sourceTree = "<group>"; wrapsLines = 0; };
 		B9F1D8312B74D81500C2CFDE /* CodeGoneWild */ = {isa = PBXFileReference; lastKnownFileType = text; path = CodeGoneWild; sourceTree = "<group>"; };
+		B9F1D8332B7516B300C2CFDE /* SwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
+		B9F1D8352B751AD100C2CFDE /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		B9F1D8372B751B2800C2CFDE /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
 		B9FF3DC52B6A19EF0023BFEE /* Storyboard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Storyboard.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -109,6 +115,9 @@
 			isa = PBXGroup;
 			children = (
 				B9AF25E72B667B6A00BFF354 /* MessagesViewController.swift */,
+				B9F1D8332B7516B300C2CFDE /* SwiftUIView.swift */,
+				B9F1D8372B751B2800C2CFDE /* MessageView.swift */,
+				B9F1D8352B751AD100C2CFDE /* ChatView.swift */,
 				B9AF25F92B667CEB00BFF354 /* ChatEngine.swift */,
 				B9FF3DC52B6A19EF0023BFEE /* Storyboard.storyboard */,
 				B90292262B68BAA10084E2DF /* README.md */,
@@ -221,8 +230,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B9F1D8362B751AD100C2CFDE /* ChatView.swift in Sources */,
 				B9AF25E82B667B6A00BFF354 /* MessagesViewController.swift in Sources */,
 				B9AF25FA2B667CEB00BFF354 /* ChatEngine.swift in Sources */,
+				B9F1D8342B7516B300C2CFDE /* SwiftUIView.swift in Sources */,
+				B9F1D8382B751B2800C2CFDE /* MessageView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

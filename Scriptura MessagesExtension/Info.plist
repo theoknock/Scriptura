@@ -5,7 +5,7 @@
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionMainStoryboard</key>
-		<string>MainInterface</string>
+		<string>Storyboard</string>
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.message-payload-provider</string>
 	</dict>

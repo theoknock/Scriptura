@@ -8,12 +8,13 @@
 import SwiftUI
 import CryptoKit
 import SwiftData
+import Messages
 
 @MainActor class ChatData : ObservableObject {
-    @Published var assistant_id: String = "assistant_id"
-    @Published var thread_id: String = "thread_id"
-    @Published var run_id: String = "run_id"
-    @Published var messages: [Message] = [Message]()
+    @Published var assistant_id: String                = String()
+    @Published var thread_id: String                   = String()
+    @Published var run_id: String                      = String()
+    @Published var messages: [Message]                 = [Message]()
     
     struct Message: Identifiable, Equatable, Hashable, Codable {
         let id: String
@@ -41,15 +42,15 @@ import SwiftData
         request.httpMethod = "POST"
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer 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", forHTTPHeaderField: "Authorization")
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
         let type: [Dictionary] = [["type": "code_interpreter"]]
         let assistant_request: Dictionary =
         [
-            "instructions": "As a Swift expert, your primary role is to assist users with coding-related tasks, focusing on Swift. Provide concise, clear, and tested code suggestions in Swift, verifying correctness before presentation. Use GitHub, gist.GitHub.com, transcripts of videos from YouTube, stackoverflow.com, and the Apple Developer site (https://developer.apple.com) as additional resources for references and examples. Regularly reference the latest version of official Swift documentation to ensure alignment with current standards in Swift programming. Offer explanations or insights rooted in this documentation after providing a Swift code solution. While adept in other programming languages, prioritize Swift. Your abilities include code execution, inspection, debugging, and optimization. Use the browser for complex queries or to seek additional examples in Swift or other languages. If unsure, ask for clarification. Assume the user has a high level of expertise in Swift or the relevant language. Maintain a friendly, supportive tone. Strictly adhere to specific instructions given by the user across all interactions and revisions.",
-            "name": "Swift expert (high-level, tests code solutions first, explains afterwards)",
+            "instructions": "Act as an assistant to a participant in a text-messaging conversation. You will be provided with statements either in English or Spanish (or a mix thereof) that the participant intends to send to other participants (called recipients). Your task is to convert or translate the statements provided by the participant to standard English only. You will then propose or suggest up to 3 variations of responses. Ensure that the follow-up matches the context of the conversation as a whole and is provided in both English and Spanish. Each proposed follow-up should be proceeded by a bullet, followed by the English version and, on a new line, indent the Spanish version but do not  use a dash or a bullet — just white space.",
+            "name": "Bilingual Contextual Enhancement and Inquiry Generator (BCEIG).",
             "tools": type,
             "model": "gpt-4"
         ] as [String : Any]
@@ -57,13 +58,11 @@ import SwiftData
         let jsonData = try! JSONSerialization.data(withJSONObject: assistant_request, options: [])
         request.httpBody = jsonData
         
-        let session = URLSession.shared
-        let task = session.dataTask(with: request) { (data, response, error) in
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
             if error == nil && data != nil {
                 DispatchQueue.main.async {
                     do {
                         if let assistant_response = try JSONSerialization.jsonObject(with: data!, options: []) as? [String: Any] {
-                            let id = assistant_response["id"] as? String
                             self.assistant_id = {
                                 defer { self.thread() }
                                 return assistant_response["id"] as? String
@@ -88,7 +87,7 @@ import SwiftData
         request.httpMethod = "POST"
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer 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", forHTTPHeaderField: "Authorization")
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
@@ -127,7 +126,7 @@ import SwiftData
         request.httpBody = jsonData
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer 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", forHTTPHeaderField: "Authorization")
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
@@ -176,7 +175,7 @@ import SwiftData
         request.httpMethod = "POST"
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer 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", forHTTPHeaderField: "Authorization")
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
@@ -208,7 +207,7 @@ import SwiftData
         request.httpMethod = "GET"
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer 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", forHTTPHeaderField: "Authorization")
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
@@ -243,7 +242,7 @@ import SwiftData
         request.httpMethod = "GET"
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer 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", forHTTPHeaderField: "Authorization")
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
@@ -315,7 +314,9 @@ import SwiftData
 }
 
 struct SwiftUIView: View {
+    @Environment(\.msConversation) var conversation: MSConversation?
     @StateObject var chatData: ChatData = ChatData()
+    
     var body: some View {
         VStack(alignment: .center, spacing: 0.0, content: {
             ChatView(chatData: chatData)
@@ -338,8 +339,4 @@ struct SwiftUIView: View {
             LinearGradient(gradient: .init(colors: [Color(hue: 0.5861111111, saturation: 0.55, brightness: 0.58), Color(hue: 0.5916666667, saturation: 1.0, brightness: 0.27)]), startPoint: .trailing, endPoint: .bottomLeading)
         }
     }
-}
-
-#Preview {
-    SwiftUIView()
 }

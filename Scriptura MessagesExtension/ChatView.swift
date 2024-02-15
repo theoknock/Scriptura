@@ -5,9 +5,14 @@
 //  Created by Xcode Developer on 2/8/24.
 //
 
+
+
 import SwiftUI
+import Messages
 
 struct ChatView: View {
+    @Environment(\.msConversation) var conversation: MSConversation?
+    
     @ObservedObject var chatData: ChatData
     @State private var lastMessageId: String?
     
@@ -37,6 +42,24 @@ struct ChatView: View {
                             .fill(Color.init(uiColor: .gray).opacity(0.25))
                         //                            .shadow(color: Color.gray, radius: 3.0)
                     )
+                    .onTapGesture {
+                        let message_ios = MSMessage()
+                        message_ios.summaryText = message.response
+                        
+                        let conversation = self.conversation!
+                        
+                        let layout = MSMessageTemplateLayout()
+                        layout.caption = message.response
+                        message_ios.layout = layout
+                        
+                        conversation.insert(message_ios) { error in
+                            if let error = error {
+                                print("Error occurred: \(error)")
+                            }
+                        }
+                        // Insert the message into the active conversation
+                        // This part needs to be handled in your MessagesExtensionViewController
+                    }
                 }
                 .listSectionSpacing(25.0)
                 .id(message_id)
@@ -63,6 +86,8 @@ struct ChatView: View {
             }
             .onChange(of: chatData.messages) { _ in
                 lastMessageId = chatData.messages.last?.id
+                
+                
             }
             .onOrientationChange {
                 if let lastMessageId = lastMessageId {
@@ -73,13 +98,16 @@ struct ChatView: View {
     }
 }
 
-struct ChatView_Previews: PreviewProvider {
-    static var previews: some View {
-        SwiftUIView()
-        //        ChatView(chatData: ChatData())
-            .preferredColorScheme(.dark)
+private func sendAsMSMessage(conversation: MSConversation, text: String) {
+        let message = MSMessage()
+        message.summaryText = text
+        
+        conversation.insert(message) { error in
+            if let error = error {
+                print(error.localizedDescription)
+            }
+        }
     }
-}
 
 struct OrientationChangeDetector: ViewModifier {
     let action: () -> Void
@@ -95,7 +123,7 @@ struct OrientationChangeDetector: ViewModifier {
 extension View {
     func onOrientationChange(perform action: @escaping () -> Void) -> some View {
         self.modifier(OrientationChangeDetector(action: action))
-    }
+    } 
 }
 
 

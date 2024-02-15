@@ -11,7 +11,7 @@
         <!--Messages View Controller-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
-                <viewController id="Y6W-OH-hqX" customClass="MessagesViewController" customModule="Scriptura_MessagesExtension" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="Y6W-OH-hqX" customClass="MessagesViewController" customModule="Scriptura_MessagesExtension" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" translatesAutoresizingMaskIntoConstraints="NO" id="opl-QQ-o1u">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <subviews>
@@ -30,9 +30,6 @@
                                         <color key="textColor" systemColor="labelColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                                        <connections>
-                                            <outlet property="delegate" destination="Y6W-OH-hqX" id="FVn-Mh-aOo"/>
-                                        </connections>
                                     </textView>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Ljd-Qv-Veu" userLabel="Prompt Stack View">
                                         <rect key="frame" x="0.0" y="183.66666666666666" width="361" height="34.333333333333343"/>
@@ -41,9 +38,6 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="361" height="34.333333333333336"/>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="plain" title="Revise"/>
-                                                <connections>
-                                                    <action selector="promptButtonTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="0pW-OK-4Ca"/>
-                                                </connections>
                                             </button>
                                         </subviews>
                                     </stackView>
@@ -59,9 +53,6 @@
                                         <color key="textColor" systemColor="labelColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                                        <connections>
-                                            <outlet property="delegate" destination="Y6W-OH-hqX" id="tZr-fI-nf7"/>
-                                        </connections>
                                     </textView>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="dju-cw-DkZ" userLabel="Response Stack View">
                                         <rect key="frame" x="0.0" y="401.66666666666669" width="361" height="34.333333333333314"/>
@@ -70,11 +61,11 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="361" height="34.333333333333336"/>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="plain" title="Submit"/>
-                                                <connections>
-                                                    <action selector="responseButtonTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="ha5-zh-cCr"/>
-                                                </connections>
                                             </button>
                                         </subviews>
+                                        <constraints>
+                                            <constraint firstItem="d8m-ey-HDw" firstAttribute="width" secondItem="dju-cw-DkZ" secondAttribute="width" multiplier="0.3" id="P3c-Ue-fSb"/>
+                                        </constraints>
                                     </stackView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ROLE" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8br-7D-FXF" userLabel="ROLE">
                                         <rect key="frame" x="0.0" y="436" width="361" height="13.333333333333314"/>
@@ -88,9 +79,6 @@
                                         <color key="textColor" systemColor="labelColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                                        <connections>
-                                            <outlet property="delegate" destination="Y6W-OH-hqX" id="Clg-Yc-zad"/>
-                                        </connections>
                                     </textView>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="lWt-H6-zdn" userLabel="Role Stack View">
                                         <rect key="frame" x="0.0" y="620" width="361" height="34.333333333333371"/>
@@ -99,9 +87,6 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="361" height="34.333333333333336"/>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="plain" title="Instruct"/>
-                                                <connections>
-                                                    <action selector="roleButtonTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="U6R-hi-niA"/>
-                                                </connections>
                                             </button>
                                         </subviews>
                                     </stackView>
@@ -110,6 +95,7 @@
                                     <constraint firstItem="1SS-Vw-eyd" firstAttribute="leading" secondItem="hkz-Re-adC" secondAttribute="leading" id="A0f-Iv-wUd"/>
                                     <constraint firstItem="cKn-79-xyu" firstAttribute="bottom" secondItem="7qO-NE-KAu" secondAttribute="top" id="H2a-q4-d2p"/>
                                     <constraint firstItem="1SS-Vw-eyd" firstAttribute="bottom" secondItem="hkz-Re-adC" secondAttribute="top" id="IPr-dM-cnf"/>
+                                    <constraint firstAttribute="trailing" secondItem="7qO-NE-KAu" secondAttribute="trailing" id="Rt9-f2-wxn"/>
                                     <constraint firstItem="8br-7D-FXF" firstAttribute="bottom" secondItem="6nI-df-Cif" secondAttribute="top" id="ZAK-nb-19S"/>
                                     <constraint firstItem="eGf-mP-MuY" firstAttribute="width" secondItem="bDx-cF-CTH" secondAttribute="width" multiplier="0.3" id="ah3-Jr-5Ei"/>
                                     <constraint firstItem="cKn-79-xyu" firstAttribute="leading" secondItem="7qO-NE-KAu" secondAttribute="leading" id="iKh-zC-xCd"/>
@@ -125,28 +111,18 @@
                             <constraint firstItem="6nI-df-Cif" firstAttribute="height" secondItem="opl-QQ-o1u" secondAttribute="height" multiplier="0.2" id="142-nT-atB"/>
                             <constraint firstItem="bDx-cF-CTH" firstAttribute="top" secondItem="opl-QQ-o1u" secondAttribute="topMargin" id="9jk-2c-Ver"/>
                             <constraint firstItem="bDx-cF-CTH" firstAttribute="leading" secondItem="opl-QQ-o1u" secondAttribute="leadingMargin" id="GSd-Hc-9Ax"/>
-                            <constraint firstItem="d8m-ey-HDw" firstAttribute="width" secondItem="dju-cw-DkZ" secondAttribute="width" multiplier="0.3" id="P3c-Ue-fSb"/>
                             <constraint firstItem="bDx-cF-CTH" firstAttribute="trailing" secondItem="opl-QQ-o1u" secondAttribute="trailingMargin" id="P9g-Oj-UVn"/>
-                            <constraint firstItem="bDx-cF-CTH" firstAttribute="trailing" secondItem="7qO-NE-KAu" secondAttribute="trailing" id="Rt9-f2-wxn"/>
                             <constraint firstItem="7qO-NE-KAu" firstAttribute="height" secondItem="opl-QQ-o1u" secondAttribute="height" multiplier="0.2" id="xB8-5G-6xR"/>
                             <constraint firstItem="hkz-Re-adC" firstAttribute="height" secondItem="opl-QQ-o1u" secondAttribute="height" multiplier="0.2" id="z2X-Wd-u4n"/>
                         </constraints>
                     </view>
-                    <connections>
-                        <outlet property="promptButton" destination="O36-OF-2H8" id="H18-Xc-THB"/>
-                        <outlet property="promptTextView" destination="hkz-Re-adC" id="KjK-x0-Oae"/>
-                        <outlet property="responseButton" destination="d8m-ey-HDw" id="tAe-Sf-7iP"/>
-                        <outlet property="responseTextView" destination="7qO-NE-KAu" id="5oq-aB-IbM"/>
-                        <outlet property="roleButton" destination="eGf-mP-MuY" id="O0C-AY-71A"/>
-                        <outlet property="roleTextView" destination="6nI-df-Cif" id="FY6-Gh-4jr"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <textView hidden="YES" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" id="LuH-aH-Vy1">
                     <rect key="frame" x="0.0" y="0.0" width="734" height="1369.3333333333333"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" systemColor="systemGray5Color"/>
-                    <mutableString key="text">Scriptura Message Assistant Custom Instructions Template
+                    <string key="text">Scriptura Message Assistant Custom Instructions Template
 
 Recipient Information:
 
@@ -213,7 +189,7 @@ Additional Notes:
 
 	•	Prefer not to use emojis in professional communications.
 
-By filling out this template, you provide a clear, comprehensive guide for ChatGPT to follow, ensuring that the revised message meets your specific needs and context.</mutableString>
+By filling out this template, you provide a clear, comprehensive guide for ChatGPT to follow, ensuring that the revised message meets your specific needs and context.</string>
                     <color key="textColor" systemColor="labelColor"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -230,7 +206,7 @@ By filling out this template, you provide a clear, comprehensive guide for ChatG
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray5Color">
-            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

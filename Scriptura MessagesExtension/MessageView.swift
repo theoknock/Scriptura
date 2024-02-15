@@ -16,7 +16,7 @@ struct MessageView: View {
     var body: some View {
         
         HStack(alignment: .center, spacing: 0.0) {
-            TextField(("Message ChatGTP..."), text: $prompt, axis: .vertical)
+            TextField(("Insert Spanglish..."), text: $prompt, axis: .vertical)
                 .focused($isTextFieldFocused)
                 .font(.body).dynamicTypeSize(.xLarge)
                 .fontWeight(isTextFieldFocused ? .light : .ultraLight)
@@ -25,12 +25,13 @@ struct MessageView: View {
                 .safeAreaPadding(.leading)
                 .frame(idealWidth: UIScreen.main.bounds.width * 0.875, idealHeight: UIScreen.main.bounds.height * 0.125)
                 .padding(.leading)
-//                .onf
 //                .background {
-////                    UnevenRoundedRectangle(cornerRadii: RectangleCornerRadii(topLeading: 25.0, bottomLeading: 0.0, bottomTrailing: 0.0, topTrailing: 25.0))
-////                        .strokeBorder(Color.init(uiColor: .gray).opacity(0.25), lineWidth: 1.0) :
+//                    //                    UnevenRoundedRectangle(cornerRadii: RectangleCornerRadii(topLeading: 25.0, bottomLeading: 0.0, bottomTrailing: 0.0, topTrailing: 25.0))
+//                    //                        .strokeBorder(Color.init(uiColor: .gray).opacity(0.25), lineWidth: 1.0) :
 //                    RoundedRectangle(cornerRadius: /*@START_MENU_TOKEN@*/25.0/*@END_MENU_TOKEN@*/)
-//                        .fill(Color.init(uiColor: .gray).opacity(0.25))
+//                        .fill(Color(uiColor: .systemBlue)
+//                                                .gradient.shadow(.inner(color: Color.white, radius: 2, x: 1, y: 2))
+//                                                .shadow(.inner(color: Color.black, radius: 2, x: -1, y: -2)))
 //                }
             Spacer()
             Button(action: {
@@ -172,12 +173,5 @@ struct MessageView: View {
         //                //                    .modifier(NeumorphismModifier())
         ////            )
         //        }
-    }
-}
-
-struct MessageView_Previews: PreviewProvider {
-    static var previews: some View {
-        SwiftUIView()
-            .preferredColorScheme(.dark)
     }
 }

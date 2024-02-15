@@ -12,49 +12,22 @@
 //      Use the MSMessagesAppViewController for custom instructions and interactive cbat
 
 import UIKit
-import SwiftUI // Import SwiftUI
+import SwiftUI
 import Messages
 import Foundation
 import Combine
 
 class MessagesViewController: MSMessagesAppViewController, UITextViewDelegate {
-    
-    var chatData: ChatEngine = ChatEngine()
+    var conversation: MSConversation?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        addSwiftUIView()
         
-        self.promptTextView.layer.backgroundColor = UIColor.tertiarySystemBackground.cgColor
-        self.responseTextView.layer.backgroundColor = UIColor.tertiarySystemBackground.cgColor
-        self.roleTextView.layer.backgroundColor = UIColor.tertiarySystemBackground.cgColor
-        
-        chatData.assistant(text_view: self.responseTextView)
-        chatData.thread()
+//        self.promptTextView.layer.backgroundColor = UIColor.tertiarySystemBackground.cgColor
+//        self.responseTextView.layer.backgroundColor = UIColor.tertiarySystemBackground.cgColor
+//        self.roleTextView.layer.backgroundColor = UIColor.tertiarySystemBackground.cgColor
     }
-    
-    func addSwiftUIView() {
-        // Define your SwiftUI view
-        let swiftUIView = SwiftUIView() // Replace YourSwiftUIView with your actual SwiftUI view class
-        
-        // Create a UIHostingController with your SwiftUI view
-        let hostingController = UIHostingController(rootView: swiftUIView)
-        
-        // Add the hosting controller as a child view controller
-        addChild(hostingController)
-        view.addSubview(hostingController.view)
-        hostingController.didMove(toParent: self)
-        
-        // Use Auto Layout to expand the SwiftUI view to fill the entire view
-        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
-            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-    }
+
     
     func sendTextMessage(text: String) {
         let conversation = activeConversation!
@@ -71,28 +44,28 @@ class MessagesViewController: MSMessagesAppViewController, UITextViewDelegate {
         }
     }
     
-    @IBOutlet weak var promptTextView: UITextView!
-    @IBOutlet weak var responseTextView: UITextView!
-    @IBOutlet weak var roleTextView: UITextView!
-    @IBOutlet weak var promptButton: UIButton!
-    @IBOutlet weak var responseButton: UIButton!
-    @IBOutlet weak var roleButton: UIButton!
-    
-    @IBAction func promptButtonTapped(_ sender: UIButton) {
-        chatData.addMessage(message: self.roleTextView.text + ": " + self.promptTextView.text)
-    }
-    
-    @IBAction func responseButtonTapped(_ sender: UIButton) {
-        if let text = self.responseTextView.text, !text.isEmpty {
-            sendTextMessage(text: text)
-        }
-    }
-    
-    @IBAction func roleButtonTapped(_ sender: UIButton) {
-        chatData.assistant(text_view: self.responseTextView)
-        chatData.thread()
-    }
-    
+//    @IBOutlet weak var promptTextView: UITextView!
+//    @IBOutlet weak var responseTextView: UITextView!
+//    @IBOutlet weak var roleTextView: UITextView!
+//    @IBOutlet weak var promptButton: UIButton!
+//    @IBOutlet weak var responseButton: UIButton!
+//    @IBOutlet weak var roleButton: UIButton!
+//    
+//    @IBAction func promptButtonTapped(_ sender: UIButton) {
+////        chatData.addMessage(message: self.roleTextView.text + ": " + self.promptTextView.text)
+//    }
+//    
+//    @IBAction func responseButtonTapped(_ sender: UIButton) {
+//        if let text = self.responseTextView.text, !text.isEmpty {
+//            sendTextMessage(text: text)
+//        }
+//    }
+//    
+//    @IBAction func roleButtonTapped(_ sender: UIButton) {
+////        chatData.assistant(text_view: self.responseTextView)
+////        chatData.thread()
+//    }
+//    
     // To-Do: Use the insert func of NSConversation to insert the ChatGPT response
     // func insert(MSMessage, completionHandler: ((Error?) -> Void)?)
     // Inserts a message object into the Messages app’s input field.
@@ -101,10 +74,24 @@ class MessagesViewController: MSMessagesAppViewController, UITextViewDelegate {
     // MARK: - Conversation Handling
     
     override func willBecomeActive(with conversation: MSConversation) {
-        // Called when the extension is about to move from the inactive to active state.
-        // This will happen when the extension is about to present UI.
+        self.conversation = conversation
+        let rootView = SwiftUIView().environment(\.msConversation, conversation)
+        let hostingController = UIHostingController(rootView: rootView)
         
-        // Use this method to configure the extension and restore previously stored state.
+        // Add the hosting controller as a child view controller
+        addChild(hostingController)
+        view.addSubview(hostingController.view)
+        hostingController.didMove(toParent: self)
+        
+        // Use Auto Layout to expand the SwiftUI view to fill the entire view
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            hostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            hostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
     }
     
     override func didResignActive(with conversation: MSConversation) {
@@ -126,7 +113,6 @@ class MessagesViewController: MSMessagesAppViewController, UITextViewDelegate {
     
     override func didStartSending(_ message: MSMessage, conversation: MSConversation) {
         // Called when the user taps the send button.
-
     }
     
     override func didCancelSending(_ message: MSMessage, conversation: MSConversation) {

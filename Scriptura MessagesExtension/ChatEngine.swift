@@ -25,7 +25,7 @@ class ChatEngine : NSObject {
         request.httpMethod = "POST"
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer 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", forHTTPHeaderField: "Authorization")
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
@@ -74,7 +74,7 @@ class ChatEngine : NSObject {
         request.httpMethod = "POST"
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer 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", forHTTPHeaderField: "Authorization")
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
@@ -113,7 +113,7 @@ class ChatEngine : NSObject {
         request.httpBody = jsonData
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer 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", forHTTPHeaderField: "Authorization")
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
@@ -156,7 +156,7 @@ class ChatEngine : NSObject {
         request.httpMethod = "POST"
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer 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", forHTTPHeaderField: "Authorization")
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
@@ -203,7 +203,7 @@ class ChatEngine : NSObject {
         request.httpMethod = "GET"
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer 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", forHTTPHeaderField: "Authorization")
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
@@ -240,7 +240,7 @@ class ChatEngine : NSObject {
         request.httpMethod = "GET"
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer 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", forHTTPHeaderField: "Authorization")
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         

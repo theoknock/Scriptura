@@ -8,6 +8,7 @@
 
 
 import SwiftUI
+import UIKit
 import Messages
 
 struct ChatView: View {
@@ -25,7 +26,7 @@ struct ChatView: View {
                     HStack(alignment: .bottom, spacing: 0.0, content: {
                         Text(message.prompt)
                             .font(.body).fontWeight(.ultraLight)
-                            
+                        
                     })
                     .listRowBackground(
                         UnevenRoundedRectangle(cornerRadii: RectangleCornerRadii(topLeading: 25.0, bottomLeading: 0.0, bottomTrailing: 0.0, topTrailing: 25.0))
@@ -43,7 +44,12 @@ struct ChatView: View {
                         //                            .shadow(color: Color.gray, radius: 3.0)
                     )
                     .onTapGesture {
+                        let pasteboard = UIPasteboard.general
+                        pasteboard.string = message.response
+                        
+                        
                         let message_ios = MSMessage()
+                        
                         message_ios.summaryText = message.response
                         
                         let conversation = self.conversation!
@@ -57,26 +63,24 @@ struct ChatView: View {
                                 print("Error occurred: \(error)")
                             }
                         }
-                        // Insert the message into the active conversation
-                        // This part needs to be handled in your MessagesExtensionViewController
                     }
                 }
                 .listSectionSpacing(25.0)
                 .id(message_id)
-//                .task {
-//                    if message_id == chatData.messages.last?.id {
-//                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//                            scrollView.scrollTo(message_id, anchor: .bottom)
-//                        }
-//                    }
-//                }
-//                .task {
-//                    if message_id == chatData.messages.last?.id {
-//                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-//                            scrollView.scrollTo(message_id, anchor: .bottom)
-//                        }
-//                    }
-//                }
+                //                .task {
+                //                    if message_id == chatData.messages.last?.id {
+                //                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                //                            scrollView.scrollTo(message_id, anchor: .bottom)
+                //                        }
+                //                    }
+                //                }
+                //                .task {
+                //                    if message_id == chatData.messages.last?.id {
+                //                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                //                            scrollView.scrollTo(message_id, anchor: .bottom)
+                //                        }
+                //                    }
+                //                }
             }
             .listStyle(.plain)
             .listRowSpacing(0)
@@ -84,30 +88,34 @@ struct ChatView: View {
             .onAppear {
                 lastMessageId = chatData.messages.last?.id
             }
-            .onChange(of: chatData.messages) { _ in
+            .onChange(of: chatData.messages, {
                 lastMessageId = chatData.messages.last?.id
-                
-                
-            }
+            })
+//            .onChange(of: chatData.messages) { _ in
+//                lastMessageId = chatData.messages.last?.id
+//                
+//                
+//            }
             .onOrientationChange {
                 if let lastMessageId = lastMessageId {
                     scrollView.scrollTo(lastMessageId, anchor: .bottom)
                 }
             }
+            
         }
     }
 }
 
 private func sendAsMSMessage(conversation: MSConversation, text: String) {
-        let message = MSMessage()
-        message.summaryText = text
-        
-        conversation.insert(message) { error in
-            if let error = error {
-                print(error.localizedDescription)
-            }
+    let message = MSMessage()
+    message.summaryText = text
+    
+    conversation.insert(message) { error in
+        if let error = error {
+            print(error.localizedDescription)
         }
     }
+}
 
 struct OrientationChangeDetector: ViewModifier {
     let action: () -> Void
@@ -123,7 +131,7 @@ struct OrientationChangeDetector: ViewModifier {
 extension View {
     func onOrientationChange(perform action: @escaping () -> Void) -> some View {
         self.modifier(OrientationChangeDetector(action: action))
-    } 
+    }
 }
 
 

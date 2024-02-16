@@ -7,8 +7,11 @@
 
 
 import SwiftUI
+import Messages
 
 struct MessageView: View {
+    @Environment(\.msConversation) var conversation: MSConversation?
+    
     @ObservedObject var chatData: ChatData
     @State private var prompt: String = String()
     @FocusState private var isTextFieldFocused: Bool
@@ -41,6 +44,14 @@ struct MessageView: View {
                     chatData.addMessage(message: prompt_tidy)
 //                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                     prompt = String()
+                    
+                    let conversation = self.conversation!
+                    let localID = conversation.localParticipantIdentifier.uuidString
+                    
+                    chatData.saveChatData(remoteParticipantIdentifiers: [String(localID)])
+                    print("\n\n\(localID)\n\n")
+
+                    
                 }
             }, label: {
                 Label("", systemImage: "arrow.up.circle")

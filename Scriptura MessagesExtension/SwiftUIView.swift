@@ -16,6 +16,8 @@ import Messages
     @Published var run_id: String                      = String()
     @Published var messages: [Message]                 = [Message]()
     
+    var promptCount: Int = Int()
+    
     struct Message: Identifiable, Equatable, Hashable, Codable {
         let id: String
         var prompt: String
@@ -42,14 +44,14 @@ import Messages
         request.httpMethod = "POST"
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer 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", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer ", forHTTPHeaderField: "Authorization")
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
         let type: [Dictionary] = [["type": "code_interpreter"]]
         let assistant_request: Dictionary =
         [
-            "instructions": "Act as an assistant to a participant in a text-messaging conversation. You will be provided with statements either in English or Spanish (or a mix thereof) that the participant intends to send to other participants (called recipients). Your task is to convert or translate the statements provided by the participant to standard English only. You will then propose or suggest up to 3 variations of responses. Ensure that the follow-up matches the context of the conversation as a whole and is provided in both English and Spanish. Each proposed follow-up should be proceeded by a bullet, followed by the English version and, on a new line, indent the Spanish version but do not  use a dash or a bullet — just white space.",
+            "instructions": "Act as an assistant to a participant in a text-messaging conversation. You will be provided with statements either in English or Spanish (or a mix thereof) that the user intends to send via a text message. Your task is to convert or translate the statements provided by the user to standard English only. You will then propose or suggest up to 3 variations of the user's statements in both English and Spanish. Each statement variation should be proceeded by a bullet, followed by the English version and, on a new line, indent the Spanish version (but do not use a dash or a bullet — just white space).",
             "name": "Bilingual Contextual Enhancement and Inquiry Generator (BCEIG).",
             "tools": type,
             "model": "gpt-4"
@@ -87,7 +89,7 @@ import Messages
         request.httpMethod = "POST"
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer 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", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer ", forHTTPHeaderField: "Authorization")
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
@@ -106,6 +108,7 @@ import Messages
                                 return err_msg!
                             }()
                             self.messages.append(Message.init(prompt: self.assistant_id.trimmingCharacters(in: .whitespacesAndNewlines), response: self.thread_id.trimmingCharacters(in: .whitespacesAndNewlines)))
+//                            self.loadChatData(remoteParticipantIdentifiers: ["asdf"])
                         }
                     } catch {
                         self.messages.append(Message.init(prompt: "Error getting thread", response: error.localizedDescription))
@@ -126,7 +129,7 @@ import Messages
         request.httpBody = jsonData
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer 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", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer ", forHTTPHeaderField: "Authorization")
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
@@ -175,7 +178,7 @@ import Messages
         request.httpMethod = "POST"
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer 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", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer ", forHTTPHeaderField: "Authorization")
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
@@ -207,7 +210,7 @@ import Messages
         request.httpMethod = "GET"
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer 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", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer ", forHTTPHeaderField: "Authorization")
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
@@ -237,12 +240,15 @@ import Messages
     }
     
     func list() {
+        if (self.promptCount > 2) {
+            self.promptCount = 0
+        }
         let url = URL(string: "https://api.openai.com/v1/threads/" + self.thread_id + "/messages")!
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer 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", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer ", forHTTPHeaderField: "Authorization")
         request.addValue("org-30HBRKuB7MPad1UstimL6G8o", forHTTPHeaderField: "OpenAI-Organization")
         request.addValue("assistants=v1", forHTTPHeaderField: "OpenAI-Beta")
         
@@ -257,6 +263,12 @@ import Messages
                                     if let textArray = (contentArray.first)!["text"] as? [String: Any] {
                                         let value = textArray["value"] as! String
                                         self.messages[self.messages.count - 1].response = value
+//                                        self.saveChatData(remoteParticipantIdentifiers: ["asdf"])
+                                        //                                        DispatchQueue.concurrentPerform(iterations: 3) { i in
+                                        //                                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+                                        //                                                self.addMessage(message: "Can you suggest an alternative?")
+                                        //                                            })
+                                        //                                        }
                                     }
                                 }
                             }
@@ -310,6 +322,69 @@ import Messages
         print(messages)
     }
     
+    func saveChatData(remoteParticipantIdentifiers: [String]) {
+        print("saveChatData")
+        guard !remoteParticipantIdentifiers.isEmpty else {
+            print("Remote Participant Identifiers array is empty.")
+            return
+        }
+        
+        let fileName = remoteParticipantIdentifiers.first! // Assuming the array is not empty.
+        let chatInfo = [
+            "thread_id": self.thread_id,
+            "assistant_id": self.assistant_id,
+            "messages": messages.map { ["id": $0.id, "prompt": $0.prompt, "response": $0.response] }
+        ] as [String : Any]
+        
+        do {
+            let fileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("\(fileName).json")
+            let jsonData = try JSONSerialization.data(withJSONObject: chatInfo, options: .prettyPrinted)
+            try jsonData.write(to: fileURL, options: .atomic)
+            print("Chat data saved successfully to \(fileName).json")
+        } catch {
+            print("Error saving chat data: \(error)")
+        }
+    }
+    
+    func loadChatData(remoteParticipantIdentifiers: [String]) {
+        print("loadChatData")
+        
+        guard !remoteParticipantIdentifiers.isEmpty else {
+            print("Remote Participant Identifiers array is empty.")
+            return
+        }
+        
+        let fileName = remoteParticipantIdentifiers.first! // Assuming the array is not empty.
+        let fileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("\(fileName).json")
+        
+        do {
+            let jsonData = try Data(contentsOf: fileURL)
+            let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: [])
+            
+            guard let dictionary = jsonObject as? [String: Any],
+                  let loadedThreadId = dictionary["thread_id"] as? String,
+                  let loadedAssistantId = dictionary["assistant_id"] as? String,
+                  let loadedMessages = dictionary["messages"] as? [[String: String]] else {
+                print("Error: JSON structure doesn't match expected format")
+                return
+            }
+            
+            // Set the properties
+            self.thread_id = loadedThreadId
+            self.assistant_id = loadedAssistantId
+            self.messages = loadedMessages.compactMap { dict in
+                guard let id = dict["id"], let prompt = dict["prompt"], let response = dict["response"] else {
+                    return Message(prompt: "nil", response: "nil")
+                }
+                return Message(prompt: prompt, response: response)
+            }
+            
+            print("Chat data loaded successfully from \(fileName).json")
+        } catch {
+            print("Error loading chat data: \(error)")
+        }
+    }
+    
     
 }
 
@@ -321,8 +396,16 @@ struct SwiftUIView: View {
         VStack(alignment: .center, spacing: 0.0, content: {
             ChatView(chatData: chatData)
                 .task {
-                    chatData.assistant()
+                    if chatData.assistant_id.isEmpty {
+                        chatData.assistant()
+                    }
+                    let conversation = self.conversation!
+                    let localID = conversation.localParticipantIdentifier.uuidString
+                    
+                    chatData.loadChatData(remoteParticipantIdentifiers: [String(localID)])
+                    print("\n\n\(localID)\n\n")
                 }
+            
             MessageView(chatData: chatData)
                 .background {
                     Capsule()
